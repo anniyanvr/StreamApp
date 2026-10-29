@@ -1,3 +1,14 @@
 .DS_Store
+.idea
 /.settings
 /target/
+/codesigning.asc
+node_modules
+/dist
+/coverage/
+/tsbuild
+/types
+/.vscode
+/packages/webrtc-sdk/docs/*
+/packages/webrtc-sdk/dist
+/packages/webrtc-sdk/docs

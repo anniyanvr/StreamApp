@@ -1,9 +1,12 @@
 <settings>
 	<servers>
 		<server>
-			<id>ossrh</id>
-			<username>${env.CI_DEPLOY_USERNAME}</username>
-			<password>${env.CI_DEPLOY_PASSWORD}</password>
+        	<id>central</id>
+        	<username>${env.CI_DEPLOY_USERNAME}</username>
+	        <password>${env.CI_DEPLOY_PASSWORD}</password>
+			<repositoryOrigins>
+				<repositoryOrigin>https://central.sonatype.com</repositoryOrigin>
+			</repositoryOrigins>
 		</server>
 	</servers>
 

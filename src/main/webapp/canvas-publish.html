@@ -5,25 +5,25 @@
 	<title>Ant Media Server WebRTC Publish</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta charset="UTF-8">
-	<link rel="stylesheet" href="css/external/bootstrap4/bootstrap.min.css" >
+	<link rel="stylesheet" href="css/external/bootstrap5/bootstrap.min.css" >
+	<link rel="stylesheet" href="css/external/bootstrap5/bootstrap4-compat.css">
 	<link rel="stylesheet" href="css/common.css" />
 	<script src="js/external/adapter-latest.js"></script>
 
-	<script src="js/external/jquery-3.4.1.min.js"></script>
-	<script src="js/external/popper.min.js"></script>
-	<script src="js/external/bootstrap.min.js"></script>
+	<script src="js/external/jquery-3.7.1.min.js"></script>
+	<script src="js/external/bootstrap.bundle.min.js"></script>
 
 
 	<style>
 		video {
 			position: relative;
-			left: 0;
+			left: 40px;
 			right: 0;
 			top: 0;
 			/* If you want to fit canvas-designer and video to fit perfectly
-			You need to do two things. 
-			First -> Make width 100% below 
-			Second -> Follow the instructions on #canvas-designer  
+			You need to do two things.
+			First -> Make width 100% below
+			Second -> Follow the instructions on #canvas-designer
 			*/
 			width: 100%;
 			height: auto;
@@ -33,17 +33,18 @@
 		#canvas-designer {
 			margin: 0px auto;
 			width: 100% !important;
-			height: 100% !important; 
+			height: 100% !important;
 			position: absolute !important;
 			/*
 			If you want to fit canvas-designer and video to fit perfectly
-			comment out height 500px and z-index: 10000 below and enable below two lines 
-			height: 100% !important; 
+			comment out height 500px and z-index: 10000 below and enable below two lines
+			height: 100% !important;
 			position: absolute;
 			*/
 			border-color: black !important;
 			border: 0 solid black !important;
-			top: 0;
+			top:0;
+			left: -25px;
 			clear: both;
 		}
 
@@ -91,7 +92,7 @@
 			display: none;
 		}
 
-		
+
 		.jumbotron {
 			padding: 0;
 			overflow: hidden;
@@ -119,9 +120,8 @@
 			</div>
 		</div>
 		<div class="alert alert-primary text-center enterprise-feature" role="alert">
-			WebRTC Publish with Data Channel is an Enterprise Edition. <br/>
+			WebRTC Publish with Data Channel is an enterprise edition feature. <br/>
 			<a href="https://antmedia.io">Try Enterprise Edition for free at antmedia.io</a> <br/><br/>
-			<a href="https://github.com/ant-media/Ant-Media-Server/wiki#community-edition--enterprise-edition" style="font-size:12px">Comparison between Community and Enterprise</a>		 
 		</div>
 	</div>
 
@@ -129,13 +129,13 @@
 		<div class="row">
 			<div class="col-md-12">
 
-				<div class="jumbotron">
-					
+				<div class="jumbotron" style="height: 900px;">
+
 
 					<video id="localVideo" autoplay muted controls playsinline></video>
 					<div id="canvas-designer"></div>
 					<br>
-					
+
 					<div class="forms">
 
 						<div class="form-group col-sm-12 text-left">
@@ -162,15 +162,17 @@
 							<a id="browser_screen_share_doesnt_support"
 							href="https://caniuse.com/#search=getDisplayMedia">Your browser doesn't support screen
 						share. You can see supported browsers in this link </a>
-						
+
 						<div class="dropdown-divider"></div>
 						<legend class="col-form-label audio-source-legend">Audio Source</legend>
 					</div>
 
 					<div class="dropdown-divider"></div>
-
-					<span class="badge badge-warning"  style="font-size:14px; margin:15px;">Make sure Data channel is enabled on App Settings. Otherwise it does not work.</span>
-
+					<div>
+					<span class="badge badge-info" style="font-size:14px; margin:15px; display: block; text-align: center;">
+						Make sure Data channel is enabled on App Settings.<br>Otherwise, it does not work.
+					</span>
+					</div>
 					<div class="form-group">
 						<button class="btn btn-primary" disabled id="start_publish_button">Start Publishing</button>
 						<button class="btn btn-primary" disabled id="stop_publish_button">Stop Publishing</button>
@@ -222,7 +224,8 @@
 
 				</body>
 
-
+				<script src="js/external/jquery-3.7.1.min.js"  crossorigin="anonymous"></script>
+				<script src="js/external/notify.min.js" crossorigin="anonymous"></script>
 
 				<script type="module" lang="javascript">
 					import { WebRTCAdaptor } from "./js/webrtc_adaptor.js"
@@ -293,15 +296,6 @@
 
 	var isDataChannelEnabled = false;
 
-	/**
-	 * If publishing stops for any reason, it tries to republish again.
-	 */
-	 var autoRepublishEnabled = true;
-	/**
-	 * Timer job that checks the WebRTC connection 
-	 */
-	 var autoRepublishIntervalJob = null;
-
 	 var streamId;
 
 	 var token = getUrlParameter("token");
@@ -315,10 +309,6 @@
 	}
 
 	function stopPublishing() {
-		if (autoRepublishIntervalJob != null) {
-			clearInterval(autoRepublishIntervalJob);
-			autoRepublishIntervalJob = null;
-		}
 		webRTCAdaptor.stop(streamId);
 	}
 
@@ -380,7 +370,7 @@
 		try {
 			var iceState = webRTCAdaptor.iceConnectionState(streamId);
 			if (iceState != null && iceState != "failed" && iceState != "disconnected") {
-				
+
 				if(data == "request"){
 					webRTCAdaptor.sendData($("#streamName").val(), "request");
 				}
@@ -393,31 +383,27 @@
 			}
 			else {
 				designer.undo('all');
-				alert("WebRTC Publishing is not active. Please click Start Publishing first or check your Data Channel option.")
+				$.notify("WebRTC Publishing is not active. Please click Start Publishing first or check your Data Channel option.", {
+					autoHideDelay:5000,
+					className:'error',
+					position:'top center'
+				});
 			}
 		}
 		catch (exception) {
 			designer.undo('all');
 			console.error(exception);
-			alert("Message cannot be sent. Make sure you've enabled data channel on server web panel");
+			$.notify("Message cannot be sent. Make sure you've enabled data channel on server web panel", {
+				autoHideDelay:5000,
+				className:'error',
+				position:'top center'
+			});
 		}
 	}
 
 	function clearDraw() {
 		designer.clearCanvas();
 		sendData("clear");
-	}
-
-	function checkAndRepublishIfRequired() {
-		var iceState = webRTCAdaptor.iceConnectionState(streamId);
-		console.log("Ice state checked = " + iceState);
-
-		if (iceState == null || iceState == "failed" || iceState == "disconnected") {
-			webRTCAdaptor.stop(streamId);
-			webRTCAdaptor.closePeerConnection(streamId);
-			webRTCAdaptor.closeWebSocket();
-			initWebRTCAdaptor(true, autoRepublishEnabled);
-		}
 	}
 
 	function startAnimation() {
@@ -440,7 +426,7 @@
 			'urls': 'stun:stun1.l.google.com:19302'
 		}]
 	};
-	/* 
+	/*
 	//sample turn configuration
 	{
 	   iceServers: [
@@ -523,7 +509,7 @@
 
 	designer.appendTo(document.getElementById('canvas-designer'));
 
-	function initWebRTCAdaptor(publishImmediately, autoRepublishEnabled) {
+	function initWebRTCAdaptor(publishImmediately) {
 		webRTCAdaptor = new WebRTCAdaptor({
 			websocket_url: websocketURL,
 			mediaConstraints: mediaConstraints,
@@ -547,11 +533,6 @@
 					start_publish_button.disabled = true;
 					stop_publish_button.disabled = false;
 					startAnimation();
-					if (autoRepublishEnabled && autoRepublishIntervalJob == null) {
-						autoRepublishIntervalJob = setInterval(() => {
-							checkAndRepublishIfRequired();
-						}, 3000);
-					}
 					webRTCAdaptor.enableStats(obj.streamId);
 
 				} else if (info == "publish_finished") {
@@ -570,7 +551,7 @@
 					browser_screen_share_doesnt_support.style.display = "none";
 				}
 				else if (info == "screen_share_stopped") {
-					//choose the first video source. It may not be correct for all cases. 
+					//choose the first video source. It may not be correct for all cases.
 					$(".video-source").first().prop("checked", true);
 					console.log("screen share stopped");
 				}
@@ -579,11 +560,6 @@
 					if (typeof obj != "undefined") {
 						console.log("Connecton closed: " + JSON.stringify(obj));
 					}
-				}
-				else if (info == "pong") {
-				}
-				else if (info == "refreshConnection") {
-					checkAndRepublishIfRequired();
 				}
 				else if (info == "ice_connection_state_changed") {
 					console.log("iceConnectionState Changed: ", JSON.stringify(obj));
@@ -789,13 +765,17 @@
 				else if (error.indexOf("WebSocketNotConnected") != -1) {
 					errorMessage = "WebSocket Connection is disconnected.";
 				}
-				alert(errorMessage);
+				$.notify(errorMessage, {
+					autoHideDelay:5000,
+					className:'error',
+					position:'top center'
+				});
 			}
 		});
 }
 
 	//initialize the WebRTCAdaptor
-	initWebRTCAdaptor(false, autoRepublishEnabled);
+	initWebRTCAdaptor(false);
 
 	designer.addSyncListener(function (data) {
 		sendData(JSON.stringify(data));

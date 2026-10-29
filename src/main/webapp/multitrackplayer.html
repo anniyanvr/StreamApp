@@ -4,10 +4,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta charset="UTF-8">
 <link rel="stylesheet"
-	href="css/external/bootstrap4/bootstrap.min.css"
+	href="css/external/bootstrap5/bootstrap.min.css"
 	>
+<link rel="stylesheet" href="css/external/bootstrap5/bootstrap4-compat.css">
 <script src="js/external/adapter-latest.js"></script>
-<script src="js/external/jquery-3.4.1.min.js"></script>
+<script src="js/external/jquery-3.7.1.min.js"></script>
 <link rel="stylesheet" href="css/common.css" />
 <style>
 video {
@@ -95,7 +96,7 @@ body {
 
 
 		<div class="jumbotron">
-			<div id="players">	
+			<div id="players">
 			</div>
 			<p>
 				<input type="text" class="form-control"
@@ -126,6 +127,7 @@ body {
 	</div>
 
 </body>
+<script src="js/external/notify.min.js"></script>
 <script type="module">
 
    import {WebRTCAdaptor} from "./js/webrtc_adaptor.js"
@@ -138,33 +140,31 @@ body {
 	var streamNameBox = document.getElementById("streamName");
 
 	var streamId;
-	
+
 	var tracks = [];
-	
-	
+
+
 	var name = getUrlParameter("name");
 	if(name !== "undefined")
 	{
 		streamNameBox.value = name;
 	}
-	
+
 	function startPlaying() {
 		var enabledTracks = [];
 		tracks.forEach(function(trackId) {
 			var checkBox = document.getElementById("cbx"+trackId);
-			if(checkBox.checked) {
-				enabledTracks.push(trackId);
-			}
+			enabledTracks.push((checkBox.checked?"":"!")+trackId);
 		});
-		
+
 		streamId = streamNameBox.value;
 		webRTCAdaptor.play(streamNameBox.value, token, "", enabledTracks);
 	}
-	
+
 	function stopPlaying() {
 		webRTCAdaptor.stop(streamId);
 	}
-	
+
 	function getTracks() {
 		streamId = streamNameBox.value;
 		webRTCAdaptor.getTracks(streamNameBox.value, token);
@@ -173,7 +173,8 @@ body {
 	var pc_config = {
 			'iceServers' : [ {
 				'urls' : 'stun:stun1.l.google.com:19302'
-			} ]
+			} ],
+			sdpSemantics: 'unified-plan'
 		};
 
 	var sdpConstraints = {
@@ -185,11 +186,11 @@ body {
 		video : false,
 		audio : false
 	};
-	
+
 	var appName = location.pathname.substring(0, location.pathname.lastIndexOf("/")+1);
 	var path =  location.hostname + ":" + location.port + appName + "websocket";
 	var websocketURL =  "ws://" + path;
-	
+
 	if (location.protocol.startsWith("https")) {
 		websocketURL = "wss://" + path;
 	}
@@ -211,6 +212,7 @@ body {
 				console.log("play started");
 				start_play_button.disabled = true;
 				stop_play_button.disabled = false;
+				webRTCAdaptor.enableStats(streamNameBox.value);
 
 			} else if (info == "play_finished") {
 				//leaved the stream
@@ -224,19 +226,17 @@ body {
 							+ JSON.stringify(obj));
 				}
 			} else if (info == "newStreamAvailable") {
-				playVideoTrack(obj);
+				playVideo(obj);
 			}
 			else if (info == "updated_stats") {
-				//obj is the PeerStats which has fields
-				 //averageIncomingBitrate - kbits/sec
-				//currentIncomingBitrate - kbits/sec
-				//packetsLost - total number of packet lost
-				//fractionLost - fraction of packet lost
-				console.log("Average incoming kbits/sec: " + obj.averageIncomingBitrate 
-						+ " Current incoming kbits/sec: " + obj.currentIncomingBitrate
-						+ " packetLost: " + obj.packetsLost 
-						+ " fractionLost: " + obj.fractionLost);
-				 
+				console.log("Average incoming kbits/sec: " + obj.averageIncomingBitrate
+						+ " Current incoming kbits/sec: " + obj.currentIncomingBitrate);
+
+				for (let i = 0; i < obj.inboundRtpList.length; i++) {
+					const inboundRTP = obj.inboundRtpList[i];
+					console.log("Track: " + inboundRTP.trackIdentifier+ inboundRTP.bytesReceived);
+				}
+
 			}
 			else if (info == "trackList") {
 				addTrackList(obj.streamId, obj.trackList);
@@ -246,17 +246,23 @@ body {
 			//some of the possible errors, NotFoundError, SecurityError,PermissionDeniedError
 
 			console.log("error callback: " + JSON.stringify(error));
-			alert(JSON.stringify(error));
+			$.notify(JSON.stringify(error), {
+				autoHideDelay:5000,
+				className:'error',
+				position:'top center'
+			});
 		}
 	});
-	
+
+	window.webRTCAdaptor = webRTCAdaptor;
+
 	function addTrackList(streamId, trackList) {
 		addVideoTrack(streamId);
 		trackList.forEach(function(trackId) {
 			addVideoTrack(trackId);
 		});
 	}
-	
+
 	function addVideoTrack(trackId) {
 		tracks.push(trackId);
 
@@ -266,8 +272,8 @@ body {
 		var label= document.createElement("label");
 		var description = document.createTextNode(trackId);
 		checkbox.type = "checkbox";
-		checkbox.name = trackId;  
-		checkbox.id = "cbx"+trackId;  
+		checkbox.name = trackId;
+		checkbox.id = "cbx"+trackId;
 		checkbox.checked = false;
 		checkbox.onclick = function(){enableTrack(trackId);};
 		label.appendChild(checkbox);
@@ -275,46 +281,63 @@ body {
 		li.appendChild(label);
 		trackUl.appendChild(li);
 	}
-	
+
 	function enableTrack(trackId) {
 		var checkBox = document.getElementById("cbx"+trackId);
 		webRTCAdaptor.enableTrack(streamNameBox.value, trackId, checkBox.checked);
 	}
-	
-	function playVideoTrack(obj) {
-		var index = "0";
-		var label = obj.track.label;
+
+	function playVideo(obj) {
+		var room = streamNameBox.value;
+		console.log("new stream available with id: "
+				+ obj.streamId + "on the room:" + room);
+
+		var index;
 		if(obj.track.kind == "video") {
-			index = label.replace("ARDAMSv", "");
+			index = obj.track.id.replace("ARDAMSv", "");
 		}
 		else if(obj.track.kind == "audio") {
-			index = label.replace("ARDAMSa", "");
+			index = obj.track.id.replace("ARDAMSa", "");
 		}
-		else {
-			console.error("unknown track kind:"+obj.track.kind);
+
+		if(index == room) {
+			return;
 		}
-		
+
 		var video = document.getElementById("remoteVideo"+index);
-		
+
 		if (video == null) {
 			createRemoteVideo(index);
 			video = document.getElementById("remoteVideo"+index);
+			video.srcObject = new MediaStream();
 		}
 
-		if(obj.track.kind == "audio") {
-			video.srcObject = obj.stream;			
-		}
-		else {
-			video.srcObject = new MediaStream([obj.track]);			
-		}
+		video.srcObject.addTrack(obj.track)
+
+		obj.track.onended = event => {
+			video.srcObject.removeTrack(event.currentTarget);
+			if(video.srcObject.getTracks().length == 0) {
+				removeRemoteVideo(index);
+			}
+		};
 	}
-	
-	function createRemoteVideo(index) {
-		var player = document.createElement("div"); 
-		player.className = "col-sm-6";
-		player.id = "player"+index;
-		player.innerHTML = '<video id="remoteVideo'+index+'" autoplay controls playsinline></video>'+'video:'+index;
+
+	function createRemoteVideo(streamId) {
+		var player = document.createElement("div");
+		player.className = "col-sm-12";
+		player.id = "player"+streamId;
+		player.innerHTML = '<video id="remoteVideo'+streamId+'"controls autoplay playsinline></video>'+streamId;
 		document.getElementById("players").appendChild(player);
+	}
+
+	function removeRemoteVideo(streamId) {
+		var video = document.getElementById("remoteVideo"+streamId);
+		if (video != null) {
+			var player = document.getElementById("player" + streamId);
+			video.srcObject = null;
+			document.getElementById("players").removeChild(player);
+		}
+		//webRTCAdaptor.stop(streamId);
 	}
 
 	$(function() {

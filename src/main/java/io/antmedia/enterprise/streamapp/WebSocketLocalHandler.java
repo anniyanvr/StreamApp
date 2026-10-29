@@ -2,18 +2,9 @@ package io.antmedia.enterprise.streamapp;
 
 import java.io.IOException;
 
-import javax.websocket.EndpointConfig;
-import javax.websocket.OnClose;
-import javax.websocket.OnError;
-import javax.websocket.OnMessage;
-import javax.websocket.OnOpen;
-import javax.websocket.Session;
-import javax.websocket.server.ServerEndpoint;
-
 import org.apache.catalina.core.ApplicationContextFacade;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
-import org.apache.tomcat.websocket.server.DefaultServerEndpointConfigurator;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +14,13 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import io.antmedia.websocket.WebSocketCommunityHandler;
 import io.antmedia.websocket.WebSocketConstants;
+import jakarta.websocket.EndpointConfig;
+import jakarta.websocket.OnClose;
+import jakarta.websocket.OnError;
+import jakarta.websocket.OnMessage;
+import jakarta.websocket.OnOpen;
+import jakarta.websocket.Session;
+import jakarta.websocket.server.ServerEndpoint;
 
 
 @ServerEndpoint(value="/websocket", configurator=AMSEndpointConfigurator.class)
@@ -30,6 +28,8 @@ public class WebSocketLocalHandler {
 
 	WebSocketCommunityHandler handler;
 	private String userAgent = "N/A";
+	private String clientIP = "N/A";
+
 
 	protected static Logger logger = LoggerFactory.getLogger(WebSocketLocalHandler.class);
 
@@ -37,12 +37,14 @@ public class WebSocketLocalHandler {
 	public void onOpen(Session session, EndpointConfig config) {
 		if(config.getUserProperties().containsKey(AMSEndpointConfigurator.USER_AGENT)) {
 			userAgent = (String) config.getUserProperties().get(AMSEndpointConfigurator.USER_AGENT);
+			clientIP = (String) config.getUserProperties().get(AMSEndpointConfigurator.CLINT_IP);
 		}
 		
 		logger.info("Web Socket opened session:{} user-agent:{}", session.getId(), userAgent);
 		
 		//increase max text buffer size - Chrome 90 requires
 		session.setMaxTextMessageBufferSize(8192 * 10);
+		session.setMaxIdleTimeout(30000);
 	}
 
 
@@ -106,6 +108,7 @@ public class WebSocketLocalHandler {
 			}
 			
 			handler.setUserAgent(userAgent);
+			handler.setClientIP(clientIP);
 		} catch (Exception e) {
 			logger.error("WebSocket handler cannot be created");
 			logger.error(ExceptionUtils.getMessage(e));

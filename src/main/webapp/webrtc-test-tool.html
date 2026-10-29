@@ -4,8 +4,9 @@
 	<title>Ant Media Server WebRTC Publish</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta charset="UTF-8">
-	<link rel="stylesheet" href="css/external/bootstrap4/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+	<link rel="stylesheet" href="css/external/bootstrap5/bootstrap.min.css" crossorigin="anonymous">
 
+	<link rel="stylesheet" href="css/external/bootstrap5/bootstrap4-compat.css">
 	<script src="js/external/adapter-latest.js"></script>
 
 
@@ -72,84 +73,89 @@
 
 		<div class="form-group">
 
-			<span style="float:left" class="">Test WebSocket URL: </span><br>
+			<span style="float:left" class="">WebSocket URL: </span><br>
 			<div class="form-row">
 				<div class="col-6">
 					<span ><input type="text" id="test_websocket_url" class="form-control" placeholder="Please write your WebSocket URL. For example: wss://serverdomain.com:5443/LiveApp/websocket"></span>
 				</div>
-				<div style="margin-top:10px;" class="col-12">
-					<span style="float:left">WebSocket Status: </span> 
-					<span id="websocket-succeed" style="float:left; margin-left:5px; display: none"> <img src="https://raw.githubusercontent.com/wiki/ant-media/Ant-Media-Server/images/true-icon.png"></span>
-					<span id="websocket-failed" style="float:left; margin-left:5px; display: none"> <img src="https://raw.githubusercontent.com/wiki/ant-media/Ant-Media-Server/images/false-icon.png"></span>
+				
+			</div>
+		</div>
+
+		<legend class="col-form-label video-source-legend">Video devices:</legend>
+
+		<br>
+		<br>
+
+		<div class="form-group">
+			<div class="form-row">
+				<div class="col-6">
+					<span class="">Test Duration(Secs): </span><input type="number" id="test_duration" class="form-control" value="10">
 				</div>
 			</div>
 		</div>
 
-		<div class="form-group">	
+		<div class="form-group">
 			<button class="btn btn-primary" disabled
 			id="start-webrtc-test-button">Start WebRTC Testing</button>
 		</div>
 
-		<legend class="col-form-label video-source-legend">Test video devices:</legend>
-
-		<br>
-		<br>
-
-		<div class="form-group">	
-			<div class="form-row">
-				<div class="col-6">
-					<span class="">Test duration(time): </span><input type="number" id="test_duration" class="form-control" value="10">
-				</div>
-			</div>
-		</div> 
-
-
-		<div class="form-group">	
+		<div class="form-group">
 			<div id="test_result" style="display:none">Test Started</div>
 		</div>
 
-		<div class="form-group">	
+		<div class="form-group">
 			<div id="progress" class="progress" style="display:none">
 				<div id="progress-bar" class="progress-bar progress-bar-striped" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+			
+			</div>
+		</div>
+
+		<div class="form-group" id="websocketStatus" style="display:none">
+			<div style="margin-top:10px;">
+				<span>WebSocket Status: </span>
+				<span id="websocket-succeed" style="margin-left:5px; display: none"> <img src="https://raw.githubusercontent.com/wiki/ant-media/Ant-Media-Server/images/true-icon.png"></span>
+				<span id="websocket-failed" style="margin-left:5px; display: none"> <img src="https://raw.githubusercontent.com/wiki/ant-media/Ant-Media-Server/images/false-icon.png"></span>
 			</div>
 		</div>
 
 		<section id="publish_statistics" style="display:none">
-			<div class="form-group">	
+			
+			<div class="form-group">
 				<h5 class="text-muted">WebRTC Publish Statistics:</h5>
 			</div>
 
-			<div class="form-group">	
+			<div class="form-group">
 				<div id="stats_panel" style="margin-top: 10px" >
 					<div class="row">
 						<div class="col-sm-4">
 
 							<div>
-								<a id="publish_min_bit_rate_warn" style="display:none" href="#" data-toggle="tooltip" title="Min Bitrate parameter should at least 250kbps"><img src="https://raw.githubusercontent.com/wiki/ant-media/Ant-Media-Server/images/false-icon.png"></a>
+								<a id="publish_min_bit_rate_warn" style="display:none" href="#" data-bs-toggle="tooltip" title="Min Bitrate parameter should at least 250kbps"><img src="https://raw.githubusercontent.com/wiki/ant-media/Ant-Media-Server/images/false-icon.png"></a>
 								<span id="publish_min_bit_rate_info" style="display:none"><img src="https://raw.githubusercontent.com/wiki/ant-media/Ant-Media-Server/images/true-icon.png"></span>
 								<span id="publish_min_bit_rate_container">Min Bitrate(Kbps): <span id="publish_min_bit_rate"></span></span>
 							</div>
 
 							<div>
-								<a id="publish_average_bit_rate_warn" style="display:none" href="#" data-toggle="tooltip" title="Average Bitrate parameter should at least 250kbps"><img src="https://raw.githubusercontent.com/wiki/ant-media/Ant-Media-Server/images/false-icon.png"></a>
+								<a id="publish_average_bit_rate_warn" style="display:none" href="#" data-bs-toggle="tooltip" title="Average Bitrate parameter should at least 250kbps"><img src="https://raw.githubusercontent.com/wiki/ant-media/Ant-Media-Server/images/false-icon.png"></a>
 								<span id="publish_average_bit_rate_info" style="display:none"><img src="https://raw.githubusercontent.com/wiki/ant-media/Ant-Media-Server/images/true-icon.png"></span>
 								<span id="publish_average_bit_rate_container">Average Bitrate(Kbps): <span id="publish_average_bit_rate"></span></span>
 							</div>
 
 							<div>
-								<a id="publish_max_bit_rate_warn" style="display:none" href="#" data-toggle="tooltip" title="Max Bitrate parameter should at least 250kbps"><img src="https://raw.githubusercontent.com/wiki/ant-media/Ant-Media-Server/images/false-icon.png"></a>
+								<a id="publish_max_bit_rate_warn" style="display:none" href="#" data-bs-toggle="tooltip" title="Max Bitrate parameter should at least 250kbps"><img src="https://raw.githubusercontent.com/wiki/ant-media/Ant-Media-Server/images/false-icon.png"></a>
 								<span id="publish_max_bit_rate_info" style="display:none"><img src="https://raw.githubusercontent.com/wiki/ant-media/Ant-Media-Server/images/true-icon.png"></span>
 								<span id="publish_max_bit_rate_container">Max Bitrate(Kbps): <span id="publish_max_bit_rate"></span></span>
 							</div>
 
 							<div>
-								<a id="publish_packet_lost_warn" style="display:none" href="#" data-toggle="tooltip" title="Packet lost parameter should max 20"><img src="https://raw.githubusercontent.com/wiki/ant-media/Ant-Media-Server/images/false-icon.png"></a>
+								<a id="publish_packet_lost_warn" style="display:none" href="#" data-bs-toggle="tooltip" title="Packet lost parameter should max 20"><img src="https://raw.githubusercontent.com/wiki/ant-media/Ant-Media-Server/images/false-icon.png"></a>
 								<span id="publish_packet_lost_info" style="display:none"><img src="https://raw.githubusercontent.com/wiki/ant-media/Ant-Media-Server/images/true-icon.png"></span>
 								<span id="publish_packet_lost_container">PacketsLost: <span id="publish_packet_lost_text"></span></span>
 							</div>
 
 							<div>
-								<a id="publish_jitter_warn" style="display:none" href="#" data-toggle="tooltip" title="Jitter parameter should max 100ms"><img src="https://raw.githubusercontent.com/wiki/ant-media/Ant-Media-Server/images/false-icon.png"></a>
+								<a id="publish_jitter_warn" style="display:none" href="#" data-bs-toggle="tooltip" title="Jitter parameter should max 100ms"><img src="https://raw.githubusercontent.com/wiki/ant-media/Ant-Media-Server/images/false-icon.png"></a>
 								<span id="publish_jitter_info" style="display:none"><img src="https://raw.githubusercontent.com/wiki/ant-media/Ant-Media-Server/images/true-icon.png"></span>
 								<span id="publish_jitter_container">Jitter(Secs): <span id="publish_jitter_text"></span></span>
 							</div>
@@ -159,28 +165,28 @@
 						<div class="col-sm-4">
 
 							<div>
-								<a id="round_trip_time_warn" style="display:none" href="#" data-toggle="tooltip" title="RTT parameter should max 100ms"><img src="https://raw.githubusercontent.com/wiki/ant-media/Ant-Media-Server/images/false-icon.png"></a>
+								<a id="round_trip_time_warn" style="display:none" href="#" data-bs-toggle="tooltip" title="RTT parameter should max 100ms"><img src="https://raw.githubusercontent.com/wiki/ant-media/Ant-Media-Server/images/false-icon.png"></a>
 								<span id="round_trip_time_info" style="display:none"><img src="https://raw.githubusercontent.com/wiki/ant-media/Ant-Media-Server/images/true-icon.png"></span>
 								<span id="round_trip_time_container">Round Trip Time(Secs): <span id="publish_round_trip_time"></span></span>
 							</div>
 
 							<div>
-								<a id="source_resolution_warn" style="display:none" href="#" data-toggle="tooltip" title=""><img src="https://raw.githubusercontent.com/wiki/ant-media/Ant-Media-Server/images/false-icon.png"></a>
+								<a id="source_resolution_warn" style="display:none" href="#" data-bs-toggle="tooltip" title=""><img src="https://raw.githubusercontent.com/wiki/ant-media/Ant-Media-Server/images/false-icon.png"></a>
 								<span id="source_resolution_info" style="display:none"><img src="https://raw.githubusercontent.com/wiki/ant-media/Ant-Media-Server/images/true-icon.png"></span>
 								<span id="source_resolution_container">Source WidthxHeight: <span id="publish_source_width"></span> x <span id="publish_source_height"></span></span>
 							</div>
 
 							<div>
-								<a id="ongoing_resolution_warn" style="display:none" href="#" data-toggle="tooltip" title=""><img src="https://raw.githubusercontent.com/wiki/ant-media/Ant-Media-Server/images/false-icon.png"></a>
+								<a id="ongoing_resolution_warn" style="display:none" href="#" data-bs-toggle="tooltip" title=""><img src="https://raw.githubusercontent.com/wiki/ant-media/Ant-Media-Server/images/false-icon.png"></a>
 								<span id="ongoing_resolution_info" style="display:none"><img src="https://raw.githubusercontent.com/wiki/ant-media/Ant-Media-Server/images/true-icon.png"></span>
 								<span id="ongoing_resolution_container">On-going WidthxHeight: <span id="publish_ongoing_width"></span> x <span id="publish_ongoing_height"></span></span>
 							</div>
 
 							<div>
-								<a id="on_going_fps_warn" style="display:none" href="#" data-toggle="tooltip" title=""><img src="https://raw.githubusercontent.com/wiki/ant-media/Ant-Media-Server/images/false-icon.png"></a>
+								<a id="on_going_fps_warn" style="display:none" href="#" data-bs-toggle="tooltip" title=""><img src="https://raw.githubusercontent.com/wiki/ant-media/Ant-Media-Server/images/false-icon.png"></a>
 								<span id="on_going_fps_info" style="display:none"><img src="https://raw.githubusercontent.com/wiki/ant-media/Ant-Media-Server/images/true-icon.png"></span>
 								<span id="on_going_fps_container">On-going FPS: <span id="publish_on_going_fps"></span></span>
-							</div>	
+							</div>
 
 						</div>
 					</div>
@@ -189,7 +195,7 @@
 		</section>
 
 		<section id="play_statistics" style="display:none ">
-			<div class="form-group">	
+			<div class="form-group">
 				<h5 class="text-muted">WebRTC Play Statistics:</h5>
 			</div>
 
@@ -198,31 +204,31 @@
 					<div class="col-sm-4">
 
 						<div>
-							<a id="play_min_bit_rate_warn" style="display:none" href="#" data-toggle="tooltip" title="Min Bitrate parameter should at least 250kbps"><img src="https://raw.githubusercontent.com/wiki/ant-media/Ant-Media-Server/images/false-icon.png"></a>
+							<a id="play_min_bit_rate_warn" style="display:none" href="#" data-bs-toggle="tooltip" title="Min Bitrate parameter should at least 250kbps"><img src="https://raw.githubusercontent.com/wiki/ant-media/Ant-Media-Server/images/false-icon.png"></a>
 							<span id="play_min_bit_rate_info" style="display:none"><img src="https://raw.githubusercontent.com/wiki/ant-media/Ant-Media-Server/images/true-icon.png"></span>
 							<span id="play_min_bit_rate_container">Min Bitrate(Kbps): <span id="play_min_bit_rate"></span></span>
 						</div>
 
 						<div>
-							<a id="play_average_bit_rate_warn" style="display:none" href="#" data-toggle="tooltip" title="Average Bitrate parameter should at least 250kbps"><img src="https://raw.githubusercontent.com/wiki/ant-media/Ant-Media-Server/images/false-icon.png"></a>
+							<a id="play_average_bit_rate_warn" style="display:none" href="#" data-bs-toggle="tooltip" title="Average Bitrate parameter should at least 250kbps"><img src="https://raw.githubusercontent.com/wiki/ant-media/Ant-Media-Server/images/false-icon.png"></a>
 							<span id="play_average_bit_rate_info" style="display:none"><img src="https://raw.githubusercontent.com/wiki/ant-media/Ant-Media-Server/images/true-icon.png"></span>
 							<span id="play_average_bit_rate_container">Average Bitrate(Kbps): <span id="play_average_bit_rate"></span></span>
 						</div>
 
 						<div>
-							<a id="play_max_bit_rate_warn" style="display:none" href="#" data-toggle="tooltip" title="Max Bitrate parameter should at least 250kbps"><img src="https://raw.githubusercontent.com/wiki/ant-media/Ant-Media-Server/images/false-icon.png"></a>
+							<a id="play_max_bit_rate_warn" style="display:none" href="#" data-bs-toggle="tooltip" title="Max Bitrate parameter should at least 250kbps"><img src="https://raw.githubusercontent.com/wiki/ant-media/Ant-Media-Server/images/false-icon.png"></a>
 							<span id="play_max_bit_rate_info" style="display:none"><img src="https://raw.githubusercontent.com/wiki/ant-media/Ant-Media-Server/images/true-icon.png"></span>
 							<span id="play_max_bit_rate_container">Max Bitrate(Kbps): <span id="play_max_bit_rate"></span></span>
 						</div>
 
 						<div>
-							<a id="play_packet_lost_warn" style="display:none"  href="#" data-toggle="tooltip" title="Packet lost parameter should max 20"><img src="https://raw.githubusercontent.com/wiki/ant-media/Ant-Media-Server/images/false-icon.png"></a>
+							<a id="play_packet_lost_warn" style="display:none"  href="#" data-bs-toggle="tooltip" title="Packet lost parameter should max 20"><img src="https://raw.githubusercontent.com/wiki/ant-media/Ant-Media-Server/images/false-icon.png"></a>
 							<span id="play_packet_lost_info" style="display:none"><img src="https://raw.githubusercontent.com/wiki/ant-media/Ant-Media-Server/images/true-icon.png"></span>
 							<span id="play_packet_lost_container">PacketsLost: <span id="play_packet_lost_text"></span></span>
 						</div>
 
 						<div>
-							<a id="play_jitter_warn" style="display:none" href="#" data-toggle="tooltip" title="Jitter parameter should max 100ms"><img src="https://raw.githubusercontent.com/wiki/ant-media/Ant-Media-Server/images/false-icon.png"></a>
+							<a id="play_jitter_warn" style="display:none" href="#" data-bs-toggle="tooltip" title="Jitter parameter should max 100ms"><img src="https://raw.githubusercontent.com/wiki/ant-media/Ant-Media-Server/images/false-icon.png"></a>
 							<span id="play_jitter_info" style="display:none"><img src="https://raw.githubusercontent.com/wiki/ant-media/Ant-Media-Server/images/true-icon.png"></span>
 							<span id="play_jitter_container">Jitter Average Delay(Secs): <span id="play_jitter_text"></span></span>
 						</div>
@@ -231,25 +237,25 @@
 					<div class="col-sm-4">
 
 						<div>
-							<a id="incoming_resolution_warn" style="display:none" href="#" data-toggle="tooltip" title=""><img src="https://raw.githubusercontent.com/wiki/ant-media/Ant-Media-Server/images/false-icon.png"></a>
+							<a id="incoming_resolution_warn" style="display:none" href="#" data-bs-toggle="tooltip" title=""><img src="https://raw.githubusercontent.com/wiki/ant-media/Ant-Media-Server/images/false-icon.png"></a>
 							<span id="incoming_resolution_info" style="display:none"><img src="https://raw.githubusercontent.com/wiki/ant-media/Ant-Media-Server/images/true-icon.png"></span>
 							<span id="incoming_resolution_container">Frame WidthxHeight: <span id="play_frame_width"></span>x<span id="play_frame_height"></span></span>
 						</div>
 
 						<div>
-							<a id="frame_decoded_warn" style="display:none" href="#" data-toggle="tooltip" title=""><img src="https://raw.githubusercontent.com/wiki/ant-media/Ant-Media-Server/images/false-icon.png"></a>
+							<a id="frame_decoded_warn" style="display:none" href="#" data-bs-toggle="tooltip" title=""><img src="https://raw.githubusercontent.com/wiki/ant-media/Ant-Media-Server/images/false-icon.png"></a>
 							<span id="frame_decoded_info" style="display:none"><img src="https://raw.githubusercontent.com/wiki/ant-media/Ant-Media-Server/images/true-icon.png"></span>
 							<span id="frame_decoded_container">Frames Decoded: <span id="play_frame_decoded"></span></span>
 						</div>
 
 						<div>
-							<a id="frame_dropped_warn" style="display:none" href="#" data-toggle="tooltip" title="Frames Dropped parameter should max 20"><img src="https://raw.githubusercontent.com/wiki/ant-media/Ant-Media-Server/images/false-icon.png"></a>
+							<a id="frame_dropped_warn" style="display:none" href="#" data-bs-toggle="tooltip" title="Frames Dropped parameter should max 20"><img src="https://raw.githubusercontent.com/wiki/ant-media/Ant-Media-Server/images/false-icon.png"></a>
 							<span id="frame_dropped_info" style="display:none"><img src="https://raw.githubusercontent.com/wiki/ant-media/Ant-Media-Server/images/true-icon.png"></span>
 							<span id="frame_dropped_container">Frames Dropped: <span id="play_frame_dropped"></span></span>
 						</div>
 
 						<div>
-							<a id="frame_received_warn" style="display:none" href="#" data-toggle="tooltip" title=""><img src="https://raw.githubusercontent.com/wiki/ant-media/Ant-Media-Server/images/false-icon.png"></a>
+							<a id="frame_received_warn" style="display:none" href="#" data-bs-toggle="tooltip" title=""><img src="https://raw.githubusercontent.com/wiki/ant-media/Ant-Media-Server/images/false-icon.png"></a>
 							<span id="frame_received_info" style="display:none"><img src="https://raw.githubusercontent.com/wiki/ant-media/Ant-Media-Server/images/true-icon.png"></span>
 							<span id="frame_received_container">Frames Received: <span id="play_frame_received"></span></span>
 						</div>
@@ -260,7 +266,7 @@
 
 		</section>
 
-		<div class="form-group">	
+		<div class="form-group">
 			<h5 class="text-muted">Reference Documents:</h5>
 		</div>
 
@@ -274,16 +280,19 @@
 		</div>
 	</div>
 
-	<script src="js/external/jquery-3.4.1.min.js"  crossorigin="anonymous"></script>
-	<script src="js/external/popper.min.js" crossorigin="anonymous"></script>
-	<script src="js/external/bootstrap.min.js"  crossorigin="anonymous"></script>
+	<script src="js/external/jquery-3.7.1.min.js"  crossorigin="anonymous"></script>
+	<script src="js/external/bootstrap.bundle.min.js"  crossorigin="anonymous"></script>
+	<script src="js/external/notify.min.js" crossorigin="anonymous"></script>
 
 </body>
 <script type="module" lang="javascript">
 	import {WebRTCAdaptor} from "./js/webrtc_adaptor.js"
-	import {getUrlParameter} from "./js/fetch.stream.js" 
+	import {getUrlParameter} from "./js/fetch.stream.js"
 
 	function init () {
+		document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(function (el) {
+			new bootstrap.Tooltip(el);
+		});
 		var id = getUrlParameter("id");
 		if(typeof id != "undefined") {
 			$("#streamName").val(id);
@@ -292,7 +301,7 @@
 			id = getUrlParameter("name");
 			if (typeof id != "undefined") {
 				$("#streamName").val(id);
-			} 
+			}
 			else {
 				$("#streamName").val("stream1");
 			}
@@ -331,7 +340,7 @@
 	var start_webrtc_test_button = document.getElementById("start-webrtc-test-button");
 	start_webrtc_test_button.addEventListener("click", startWebRTCTest, false);
 
-	//These are for the publish WebRTC Statistics information 
+	//These are for the publish WebRTC Statistics information
 
 	var publish_min_bit_rate_warn = document.getElementById("publish_min_bit_rate_warn");
 	var publish_min_bit_rate_info = document.getElementById("publish_min_bit_rate_info");
@@ -361,7 +370,7 @@
 	var on_going_fps_warn = document.getElementById("on_going_fps_warn");
 	var on_going_fps_info = document.getElementById("on_going_fps_info");
 
-	//These are for the play WebRTC Statistics information 
+	//These are for the play WebRTC Statistics information
 
 	var play_min_bit_rate_warn = document.getElementById("play_min_bit_rate_warn");
 	var play_min_bit_rate_info = document.getElementById("play_min_bit_rate_info");
@@ -397,12 +406,6 @@
 
 	var test_websocket_url = document.getElementById("test_websocket_url");
 
-	var autoRepublishEnabled = true;
-	/**
-	 * Timer job that checks the WebRTC connection 
-	 */
-	 var autoRepublishIntervalJob = null;
-
 	 var streamId = "testStream"+Math.floor(Math.random() * 100000);
 
 	 var token = getUrlParameter("token");
@@ -426,7 +429,7 @@
 	 	play_min_bit_rate_warn.style.display = "none";
 	 	play_average_bit_rate_warn.style.display = "none";
 	 	play_max_bit_rate_warn.style.display = "none";
-	 	play_packet_lost_warn.style.display = "none";	
+	 	play_packet_lost_warn.style.display = "none";
 	 	play_jitter_warn.style.display = "none";
 
 	 	incoming_resolution_warn.style.display = "none";
@@ -454,7 +457,7 @@
 	 	publish_average_bit_rate_warn.style.display = "none";
 	 	publish_max_bit_rate_warn.style.display = "none";
 	 	publish_packet_lost_warn.style.display = "none";
-	 	publish_jitter_warn.style.display = "none";	
+	 	publish_jitter_warn.style.display = "none";
 
 	 	round_trip_time_warn.style.display = "none";
 	 	source_resolution_warn.style.display = "none";
@@ -491,7 +494,7 @@
 	 	$("#publish_source_height").text("");
 
 	 	$("#publish_ongoing_width").text("");
-	 	$("#publish_ongoing_height").text("");	
+	 	$("#publish_ongoing_height").text("");
 
 	 	$("#publish_on_going_fps").text(0);
 
@@ -509,27 +512,27 @@
 		$("#play_frame_width").text("");
 		$("#play_frame_height").text("");
 
-		$("#play_frame_received").text(0);	
+		$("#play_frame_received").text(0);
 		$("#play_frame_decoded").text(0);
 		$("#play_frame_dropped").text(0);
 	}
 
 
 	function getCameraRadioButton(deviceName, deviceId) {
-		return "<div class=\"form-check form-check-inline\">" + 	
+		return "<div class=\"form-check form-check-inline\">" +
 		"<input class=\"form-check-input video-source\" name=\"videoSource\" type=\"radio\" value=\"" + deviceId + "\" id=\"" + deviceId + "\">" +
 		"<label class=\"form-check-label font-weight-light\" name=\"videoSource\" for=\"" + deviceId + "\" style=\"font-weight:normal\">" +
 		deviceName +
-		"</label>" +		
+		"</label>" +
 		"</div>";
 	}
 
 	function getAudioRadioButton(deviceName, deviceId) {
-		return "<div class=\"form-check form-check-inline\">" + 	
+		return "<div class=\"form-check form-check-inline\">" +
 		"<input class=\"form-check-input audio-source\" name=\"audioDeviceSource\" type=\"radio\" value=\"" + deviceId + "\" id=\"" + deviceId + "\">" +
 		"<label class=\"form-check-label font-weight-light\" name=\"audioDeviceSource\" for=\"" + deviceId + "\" style=\"font-weight:normal\">" +
 		deviceName +
-		"</label>" +		
+		"</label>" +
 		"</div>";
 	}
 
@@ -577,7 +580,7 @@
 		var selectedRadio = null;
 		var selectedAudio = null;
 
-		function initPublishWebRTCAdaptor(publishImmediately, autoRepublishEnabled) 
+		function initPublishWebRTCAdaptor(publishImmediately)
 		{
 			publishWebRTCAdaptor = new WebRTCAdaptor({
 				websocket_url : websocketURL,
@@ -591,7 +594,7 @@
 					if (info == "initialized") {
 						console.log("initialized");
 
-						websocketSucceed.style.display = "block";
+						websocketSucceed.style.display = "inline";
 						websocketFailed.style.display = "none";
 
 						start_webrtc_test_button.disabled = false;
@@ -638,7 +641,7 @@
 						//console.log("Connection closed");
 						if (typeof obj != "undefined") {
 							websocketSucceed.style.display = "none";
-							websocketFailed.style.display = "block";
+							websocketFailed.style.display = "inline";
 
 							console.log("Connecton closed: " + JSON.stringify(obj));
 						}
@@ -664,16 +667,17 @@
 
 							isFinished = true;
 							publishWebRTCAdaptor.stop(streamId);
+							webRTCPlayAdaptor.stop(streamId);
 							statsTime=0;
 
-							if(publishMinBitrateValue < 250){
+							if(publishMinBitrateValue < 500){
 								publish_min_bit_rate_warn.style.display = "inline";
 							}
 							else{
 								publish_min_bit_rate_info.style.display = "inline";
 							}
 
-							if(publishAverageBitrateValue < 250){
+							if(publishAverageBitrateValue < 800){
 								publish_average_bit_rate_warn.style.display = "inline";
 							}
 							else{
@@ -681,7 +685,7 @@
 							}
 
 
-							if(publishMaxBitrateValue < 250){
+							if(publishMaxBitrateValue < 1200){
 								publish_max_bit_rate_warn.style.display = "inline";
 							}
 							else{
@@ -690,18 +694,18 @@
 
 
 							if(publishPacketLostValue < 20){
-								publish_packet_lost_info.style.display = "inline";	
+								publish_packet_lost_info.style.display = "inline";
 							}
 							else{
-								publish_packet_lost_warn.style.display = "inline";	
+								publish_packet_lost_warn.style.display = "inline";
 							}
 
 
 							if(publishJitterValue < 0.1){
-								publish_jitter_info.style.display = "inline";	
+								publish_jitter_info.style.display = "inline";
 							}
 							else{
-								publish_jitter_warn.style.display = "inline";	
+								publish_jitter_warn.style.display = "inline";
 							}
 
 
@@ -726,7 +730,7 @@
 							+ " video source width: " + obj.resWidth + " video source height: " + obj.resHeight
 							+ "frame width: " + obj.frameWidth + " frame height: " + obj.frameHeight
 							+ " video packetLost: "  + obj.videoPacketsLost + " audio packetsLost: " + obj.audioPacketsLost
-							+ " video RTT: " + obj.videoRoundTripTime + " audio RTT: " + obj.audioRoundTripTime 
+							+ " video RTT: " + obj.videoRoundTripTime + " audio RTT: " + obj.audioRoundTripTime
 							+ " video jitter: " + obj.videoJitter + " audio jitter: " + obj.audioJitter
 							);
 
@@ -750,8 +754,8 @@
 
 						$("#publish_latest_bit_rate").text(obj.currentOutgoingBitrate);
 
-						var packetLost = parseInt(obj.videoPacketsLost) + parseInt(obj.audioPacketsLost);	
-						
+						var packetLost = parseInt(obj.videoPacketsLost) + parseInt(obj.audioPacketsLost);
+
 						$("#publish_packet_lost_text").text(packetLost);
 
 						var jitter = ((parseFloat(obj.videoJitter) + parseFloat(obj.audioJitter)) / 2).toPrecision(3);
@@ -759,12 +763,12 @@
 
 						var rtt = ((parseFloat(obj.videoRoundTripTime) + parseFloat(obj.audioRoundTripTime)) / 2).toPrecision(4);
 						$("#publish_round_trip_time").text(rtt);
-						
+
 						$("#publish_source_width").text(obj.resWidth);
 						$("#publish_source_height").text(obj.resHeight);
 
 						$("#publish_ongoing_width").text(obj.frameWidth);
-						$("#publish_ongoing_height").text(obj.frameHeight);	
+						$("#publish_ongoing_height").text(obj.frameHeight);
 
 						$("#publish_on_going_fps").text(obj.currentFPS);
 
@@ -798,17 +802,17 @@
 								audioHtmlContent += getAudioRadioButton(label, device.deviceId);
 							}
 							devices.push(device.label)
-						}); 
+						});
 						$('[name="videoSource"]').remove();
 						$('[name="audioDeviceSource"]').remove();
 
 						$(videoHtmlContent).insertAfter(".video-source-legend");
-						$(".video-source").first().prop("checked", true);	
-						
-						$(audioHtmlContent).insertAfter(".audio-source-legend");
-						$(".audio-source").first().prop("checked", true);	
+						$(".video-source").first().prop("checked", true);
 
-						
+						$(audioHtmlContent).insertAfter(".audio-source-legend");
+						$(".audio-source").first().prop("checked", true);
+
+
 						if (document.querySelector('input[name="videoSource"]')) {
 							document.querySelectorAll('input[name="videoSource"]').forEach((elem) => {
 								elem.addEventListener("change", function(event) {
@@ -862,19 +866,23 @@
 					}
 					else if (error.indexOf("ScreenSharePermissionDenied") != -1) {
 						errorMessage = "You are not allowed to access screen share";
-						$(".video-source").first().prop("checked", true);						
+						$(".video-source").first().prop("checked", true);
 					}
 					else if (error.indexOf("WebSocketNotConnected") != -1) {
 						errorMessage = "WebSocket Connection is disconnected.";
 					}
 
-					alert(errorMessage);
+					$.notify(errorMessage, {
+						autoHideDelay:5000,
+						className:'error',
+						position:'top center'
+					});
 				}
 			});
 }
 
 	//initialize the WebRTCAdaptor
-	initPublishWebRTCAdaptor(false, autoRepublishEnabled);
+	initPublishWebRTCAdaptor(false);
 
 	var playSdpConstraints = {
 		OfferToReceiveAudio : true,
@@ -888,7 +896,7 @@
 
 	var webRTCPlayAdaptor = null;
 
-	function initPlayWebRTCAdaptor() 
+	function initPlayWebRTCAdaptor()
 	{
 		webRTCPlayAdaptor = new WebRTCAdaptor({
 			websocket_url : websocketURL,
@@ -907,7 +915,7 @@
 				//joined the stream
 				console.log("play started");
 
-				webRTCPlayAdaptor.getStreamInfo(streamId); 
+				webRTCPlayAdaptor.getStreamInfo(streamId);
 				webRTCPlayAdaptor.enableStats(obj.streamId);
 
 			} else if (info == "play_finished") {
@@ -917,14 +925,14 @@
 
 				if(isFinished){
 
-					if(playMinBitrateValue < 250){
+					if(playMinBitrateValue < 500){
 						play_min_bit_rate_warn.style.display = "inline";
 					}
 					else{
 						play_min_bit_rate_info.style.display = "inline";
 					}
 
-					if(playAverageBitrateValue < 250){
+					if(playAverageBitrateValue < 800){
 						play_average_bit_rate_warn.style.display = "inline";
 					}
 					else{
@@ -932,7 +940,7 @@
 					}
 
 
-					if(playMaxBitrateValue < 250){
+					if(playMaxBitrateValue < 1200){
 						play_max_bit_rate_warn.style.display = "inline";
 					}
 					else{
@@ -940,10 +948,10 @@
 					}
 
 					if(playPacketLostValue < 20){
-						play_packet_lost_info.style.display = "inline";	
+						play_packet_lost_info.style.display = "inline";
 					}
 					else{
-						play_packet_lost_warn.style.display = "inline";	
+						play_packet_lost_warn.style.display = "inline";
 					}
 
 					if(playJitterValue < 0.1){
@@ -972,7 +980,7 @@
 					console.log("Connecton closed: "
 						+ JSON.stringify(obj));
 				}
-			} 	
+			}
 			else if (info == "ice_connection_state_changed") {
 				console.log("iceConnectionState Changed: ",JSON.stringify(obj));
 			}
@@ -999,8 +1007,8 @@
 				$("#play_min_bit_rate").text(playMinBitrateValue);
 				$("#play_average_bit_rate").text(obj.averageIncomingBitrate);
 				$("#play_max_bit_rate").text(playMaxBitrateValue);
-				
-				var packetLost = parseInt(obj.videoPacketsLost) + parseInt(obj.audioPacketsLost);	
+
+				var packetLost = parseInt(obj.videoPacketsLost) + parseInt(obj.audioPacketsLost);
 				$("#play_packet_lost_text").text(packetLost);
 
 				if(isNaN(obj.videoJitterAverageDelay)){
@@ -1008,30 +1016,37 @@
 				}
 				if(isNaN(obj.audioJitterAverageDelay)){
 					obj.audioJitterAverageDelay = 0;
-				}	
+				}
 
 				var jitterAverageDelay = ((parseFloat(obj.videoJitterAverageDelay) + parseFloat(obj.audioJitterAverageDelay)) / 2).toPrecision(3);
-				$("#play_jitter_text").text(jitterAverageDelay);
-				
+				if (jitterAverageDelay >= 0) {
+					$("#play_jitter_text").text(jitterAverageDelay);
+					$("#play_jitter_text").parent().parent().show();
+				}
+				else {
+					
+					$("#play_jitter_text").parent().parent().hide();
+				}
+
 				$("#play_audio_level").text(obj.audioLevel.toPrecision(3));
-				
+
 				$("#play_frame_width").text(obj.frameWidth);
 				$("#play_frame_height").text(obj.frameHeight);
-				
-				$("#play_frame_received").text(obj.framesReceived);	
+
+				$("#play_frame_received").text(obj.framesReceived);
 				$("#play_frame_decoded").text(obj.framesDecoded);
 				$("#play_frame_dropped").text(obj.framesDropped + " (" + (obj.framesDropped/obj.framesDecoded).toPrecision(2) + "%)");
-				
+
 				$("#stats_panel").show();
 
 				playPacketLostValue = packetLost;
 				playJitterValue = jitterAverageDelay;
 				playFrameDropValue = obj.framesDropped;
 
-				console.log("Average incoming kbits/sec: " + obj.averageIncomingBitrate 
+				console.log("Average incoming kbits/sec: " + obj.averageIncomingBitrate
 					+ " Current incoming kbits/sec: " + obj.currentIncomingBitrate
-					+ " video packetLost: " + obj.videoPacketsLost 
-					+ " audio packetLost: " + obj.audioPacketsLost 
+					+ " video packetLost: " + obj.videoPacketsLost
+					+ " audio packetLost: " + obj.audioPacketsLost
 					+ " frame width: " + obj.frameWidth
 					+ " frame height: " + obj.frameHeight
 					+ " frame received: " + obj.framesReceived
@@ -1048,7 +1063,7 @@
 			}
 			else if (info == "bitrateMeasurement") {
 
-				console.debug(obj);	
+				console.debug(obj);
 				$("#video_bit_rate").text(parseInt(obj.audioBitrate) + parseInt(obj.videoBitrate));
 			}
 			else {
@@ -1059,9 +1074,12 @@
 			//some of the possible errors, NotFoundError, SecurityError,PermissionDeniedError
 
 			//console.log("error callback: " + JSON.stringify(error));
-			//alert(JSON.stringify(error));
 			if(error != "{\"isTrusted\":true}"){
-				alert("WebSocketNotConnected");
+				$.notify("WebSocketNotConnected", {
+					autoHideDelay:5000,
+					className:'error',
+					position:'top center'
+				});
 			}
 		}
 	});
